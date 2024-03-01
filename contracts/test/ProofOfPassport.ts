@@ -117,6 +117,8 @@ describe("Proof of Passport", function () {
     it("Verifier verifies a correct proof", async () => {
       const { verifier } = await loadFixture(deployHardhatFixture);
 
+      console.log("123", callData)
+
       expect(
         await verifier.verifyProof(callData[0], callData[1], callData[2], callData[3])
       ).to.be.true;

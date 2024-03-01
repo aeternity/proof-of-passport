@@ -6,7 +6,7 @@ import { groth16 } from 'snarkjs'
 import { DataHash } from '../../common/src/utils/types'
 import { getPassportData } from '../../common/src/utils/passportData'
 import { attributeToPosition } from '../../common/src/constants/constants'
-const fs = require('fs');
+import fs from "fs";
 
 chai.use(chaiAsPromised)
 
@@ -58,6 +58,7 @@ describe('Circuit tests', function () {
   
   describe('Proof', function() {
     it('should prove and verify with valid inputs', async function () {
+      console.log(JSON.stringify(inputs))
       const { proof, publicSignals } = await groth16.fullProve(
         inputs,
         "build/proof_of_passport_js/proof_of_passport.wasm",
