@@ -1,7 +1,10 @@
 const {assert} = require('chai');
 const {utils} = require('@aeternity/aeproject');
 
-const EXAMPLE_CONTRACT_SOURCE = './contracts/ExampleContract.aes';
+const test_public = require("./test_public.json");
+const test_proof = require("./test_proof.json");
+
+const VERIFIER_CONTRACT_SOURCE = './contracts/Verifier.aes';
 
 describe('ExampleContract', () => {
     let aeSdk;
@@ -11,10 +14,10 @@ describe('ExampleContract', () => {
         aeSdk = utils.getSdk();
 
         // a filesystem object must be passed to the compiler if the contract uses custom includes
-        const fileSystem = utils.getFilesystem(EXAMPLE_CONTRACT_SOURCE);
+        const fileSystem = utils.getFilesystem(VERIFIER_CONTRACT_SOURCE);
 
         // get content of contract
-        const sourceCode = utils.getContractContent(EXAMPLE_CONTRACT_SOURCE);
+        const sourceCode = utils.getContractContent(VERIFIER_CONTRACT_SOURCE);
 
         // initialize the contract instance
         contract = await aeSdk.initializeContract({sourceCode, fileSystem});
@@ -30,71 +33,23 @@ describe('ExampleContract', () => {
     });
 
     it('verify', async () => {
-        const verify = await contract.verify(
-            [134730616801940824336036791486400174610403498755531477051457360224676363344n,
-                86921893065010572439105174575523087410629143291675727269802980158899111234n,
-                80649680061362283084530183871589323447324179499977578042437937n,
-                205977634959300434293955977811600911018n,
-                75591918038793849374961n,
-                26270441215238278093502n,
-                32182276123772312965276n,
-                23296099831640389177840n,
-                12031241564367948735997n,
-                659261469171942819758n,
-                15766263222261947848408n,
-                50247817996946986213376n,
-                59338334380158494105933n,
-                65617978073712090172963n,
-                65758073920299558940672n,
-                642829559307850963015472508762062935916233390536n
+        const input = test_public.map(i => BigInt(i));
+        const proofInput = {
+            a: [BigInt(test_proof.pi_a[0]), BigInt(test_proof.pi_a[1])],
+            b: [
+                [
+                    BigInt(test_proof.pi_b[0][0]),
+                    BigInt(test_proof.pi_b[0][1])
+                ],
+                [
+                    BigInt(test_proof.pi_b[1][0]),
+                    BigInt(test_proof.pi_b[1][1])
+                ],
             ],
-            {
-                a: [
-                    1590885486907673608208449689315452562816264669600947402437224841146403839757752305738087713322511723165795745554147n,
-                    1828644387742601170612333870410414511817282549111264260826133407485195502400577982430978981987883143011152172331130n
-                ],
-                b: [
-                    [
-                        1482936986343357953870148197505464949713756842828078726968072753104483576407624513290139058356349917014899329718425n,
-                        74425598577585976549868704264606241150856484125607409904809782918129397878337050478466718598803917440291459194091n
-                    ],
-                    [
-                        2572540757053347317253339731056912059913192071846548935123837882026495458922620477531072906936844757811916215361555n,
-                        2113251786229136280712693233442644793242940013713519323038342210294499668766160971007012171198869113771537278048583n
-                    ],
-                ],
-                c: [
-                    2130672676409527912545667466427886956623174440539031995935092545797453246902321484309254895703131017429695094960285n,
-                    683481255111946989559038308915974455092075066348096270791223828012015506514727302816259076204125966420936721472037n
-                ],
-            }
-        );
+            c: [BigInt(test_proof.pi_c[0]), BigInt(test_proof.pi_c[1])],
+        }
+
+        const verify = await contract.verify(input, proofInput);
         assert.equal(verify.decodedResult, true);
-    });
-
-    it('test', async () => {
-        console.log(1)
-
-        const test_1 = await contract.test(
-            [
-                134730616801940824336036791486400174610403498755531477051457360224676363344n,
-                86921893065010572439105174575523087410629143291675727269802980158899111234n,
-                80649680061362283084530183871589323447324179499977578042437937n,
-                205977634959300434293955977811600911018n,
-                75591918038793849374961n,
-                26270441215238278093502n,
-                32182276123772312965276n,
-                23296099831640389177840n,
-                12031241564367948735997n,
-                659261469171942819758n,
-                15766263222261947848408n,
-                50247817996946986213376n,
-                59338334380158494105933n,
-                65617978073712090172963n,
-                65758073920299558940672n,
-                642829559307850963015472508762062935916233390536n
-            ]
-        );
-        assert.equal(test_1.decodedResult, true);
     });
 });

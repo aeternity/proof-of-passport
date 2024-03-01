@@ -25,7 +25,7 @@ echo "Size of proof_of_passport.r1cs: $(wc -c <../app/ark-circom-passport/passpo
 echo "Size of proof_of_passport.wasm: $(wc -c <../app/ark-circom-passport/passport/proof_of_passport.wasm) bytes"
 
 echo "building zkey"
-yarn snarkjs groth16 setup build/proof_of_passport.r1cs pot14_final.ptau build/proof_of_passport.zkey
+yarn snarkjs groth16 setup build/proof_of_passport.r1cs pot20_final.ptau build/proof_of_passport.zkey
 
 echo "building vkey"
 echo "test random" | yarn snarkjs zkey contribute build/proof_of_passport.zkey build/proof_of_passport_final.zkey
@@ -34,3 +34,8 @@ yarn snarkjs zkey export verificationkey build/proof_of_passport_final.zkey buil
 yarn snarkjs zkey export solidityverifier build/proof_of_passport_final.zkey build/Verifier.sol
 cp build/Verifier.sol ../contracts/contracts/Verifier.sol
 echo "copied Verifier.sol to contracts"
+
+npm i -g @aeternity/snarkjs -f
+snarkjs zkey export sophiaverifier build/proof_of_passport_final.zkey build/Verifier.aes
+cp build/Verifier.aes ../ae-contracts/contracts/Verifier.aes
+echo "copied Verifier.aes to contracts"
