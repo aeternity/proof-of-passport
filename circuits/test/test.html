@@ -50,7 +50,7 @@ async function calculateProof() {
     timingComponent.innerHTML = (new Date().getTime() - time).toString();
 
 
-    const vkey = await fetch("verification_key.json").then( function(res) {
+    const vkey = await fetch("verification_key_final.json").then( function(res) {
         return res.json();
     });
 
